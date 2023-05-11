@@ -8,11 +8,11 @@ The `cartopy_grid_plots` module generates highly customizable, grid-based geogra
 
 For step-by-step instructions on how to generate similar plots, please refer to the `tutorial.ipynb` notebook included in this repository.
 
-<img src="figures/example_1.png" alt="Example 1: Surface Temperature Patterns" width="400"/>
+<img src="figures/example_1.png" alt="Example 1: 3x3 grid, regional temperature, horizontal colorbar" width="400"/>
 
-<img src="figures/example_2.png" alt="Example 2: Temperature Variations" width="400"/>
+<img src="figures/example_2.png" alt="Example 2: 4x4 grid, regional temperature, vertical colorbar" width="400"/>
 
-<img src="figures/example_3.png" alt="Example 3: Detailed Regional Temperature" width="400"/>
+<img src="figures/example_0.png" alt="Example 3: 2x3 grid, Global temperature, two colorbars" width="400"/>
 
 
 ## Functions
