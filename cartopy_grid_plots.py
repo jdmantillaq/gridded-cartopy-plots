@@ -264,7 +264,7 @@ if __name__ == '__main__':
 
             # Plot the temperature data for the current time slice
             cs = ax.contourf(lon, lat, var_values[idx, :, :], levels,
-                             cmap=cmap, extend='both')
+                             cmap=cmap, extend='both', transform=proj)
 
             # Add a title to each subplot
             ax.set_title(f"{time[idx].strftime('%Y-%b-%d')}",

@@ -12,6 +12,8 @@ For step-by-step instructions on how to generate similar plots, please refer to 
 
 <img src="figures/example_2.png" alt="Example 2: 4x4 grid, regional temperature, vertical colorbar" width="400"/>
 
+<img src="figures/example_4.png" alt="Example 4: Global temperature, vertical colorbar" width="400"/>
+
 <img src="figures/example_0.png" alt="Example 3: 2x3 grid, Global temperature, two colorbars" width="400"/>
 
 
