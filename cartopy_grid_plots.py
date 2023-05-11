@@ -1,5 +1,4 @@
 # %%
-import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 import numpy as np
 import matplotlib.pyplot as plt
@@ -82,7 +81,7 @@ def define_grid_fig(num_rows, num_columns,
     vert_spacing : float, optional
         The vertical spacing between subplots, by default 0.05.
     **kwargs : dict, optional
-        Additional keyword arguments for customizing the borders of the grid. 
+        Additional keyword arguments for customizing the borders of the grid.
         These can include 'left_border', 'right_border', 'top_border',
         and 'bottom_border'. 
         If not provided, default values are 0.01 for 'left_border'
@@ -255,7 +254,7 @@ if __name__ == '__main__':
             ax.set_extent(img_extent, proj)
             ax.set_aspect('auto')
 
-            # Remove y-axis labels for subplots that are not in the first column
+            # Remove y-axis labels for subplots that aren't in the first column
             if ci > 0:
                 ax.set_yticklabels([])
 
