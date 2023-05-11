@@ -43,7 +43,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15):
     # Set the tick locations and labels for the axes
     ax.set_xticks(np.arange(-180, 180, lon_step), crs=ccrs.PlateCarree())
     ax.set_yticks(np.arange(-90, 91, lat_step), crs=ccrs.PlateCarree())
-    ax.tick_params(axis='both', which='major', labelsize=14, color="#434343")
+    ax.tick_params(axis='both', which='major', labelsize=12, color="#434343")
     lon_formatter = LongitudeFormatter(zero_direction_label=True,
                                        number_format='.0f')
     lat_formatter = LatitudeFormatter()
