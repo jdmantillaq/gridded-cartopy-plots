@@ -2,6 +2,17 @@
 
 This Python module, `cartopy_grid_plots.py`, is used for generating a grid of subplots in a single figure, each containing a geographic plot with temperature data. The grid of subplots can be customized to have any number of rows and columns. Each subplot includes features like continents, coastlines, and gridlines. The module uses the cartopy library for geographic data manipulation and plotting, and the xarray library for handling the netCDF dataset.
 
+## Examples
+
+Here are some examples of the plots produced by the module using a surface temperature dataset taken from NCEP/DOE Reanalysis II.
+
+
+<img src="figures/example_1.png" alt="Example Image" width="400"/>
+
+<img src="figures/example_2.png" alt="Example Image" width="400"/>
+
+<img src="figures/example_3.png" alt="Example Image" width="400"/>
+
 ## Functions
 * `continentes_lon_lat(ax, lon_step=30, lat_step=15)`: This function adds continents, coastlines, gridlines, and tick labels to a Cartopy axes.
 
