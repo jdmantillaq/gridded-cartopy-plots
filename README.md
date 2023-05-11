@@ -4,14 +4,16 @@ This Python module, `cartopy_grid_plots.py`, is used for generating a grid of su
 
 ## Examples
 
-Here are some examples of the plots produced by the module using a surface temperature dataset taken from NCEP/DOE Reanalysis II.
+The `cartopy_grid_plots` module generates highly customizable, grid-based geographic plots, as demonstrated in the examples below. These plots were produced using a surface temperature dataset from NCEP/DOE Reanalysis II. 
 
+For step-by-step instructions on how to generate similar plots, please refer to the `tutorial.ipynb` notebook included in this repository.
 
-<img src="figures/example_1.png" alt="Example Image" width="400"/>
+<img src="figures/example_1.png" alt="Example 1: Surface Temperature Patterns" width="400"/>
 
-<img src="figures/example_2.png" alt="Example Image" width="400"/>
+<img src="figures/example_2.png" alt="Example 2: Temperature Variations" width="400"/>
 
-<img src="figures/example_3.png" alt="Example Image" width="400"/>
+<img src="figures/example_3.png" alt="Example 3: Detailed Regional Temperature" width="400"/>
+
 
 ## Functions
 * `continentes_lon_lat(ax, lon_step=30, lat_step=15)`: This function adds continents, coastlines, gridlines, and tick labels to a Cartopy axes.
