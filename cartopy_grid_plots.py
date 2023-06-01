@@ -69,8 +69,8 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                    alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
-        
-        path_dep = 'shapes/COL_shp/gadm36_COL_1.shp'
+        root = os.path.join(os.path.dirname(__file__), 'shapes/COL_shp/')
+        path_dep = f'{root}gadm36_COL_1.shp'
         ax.add_geometries(Reader(path_dep).geometries(),
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor='gray', lw=0.4)
