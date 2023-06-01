@@ -10,7 +10,7 @@ sns.set_context('notebook', font_scale=1.2)
 
 
 def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
-                        departamentos=False):
+                        departamentos=False, **kwargs):
     """
     Add continents, coastlines, gridlines, and tick labels to a Cartopy axes.
 
@@ -34,8 +34,8 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
     import cartopy.feature as cseature
     from cartopy.io.shapereader import Reader
-    import sys
-    sys.path.append('../')
+    
+    color_shape = kwargs.get('color_shape', 'k')
 
     # Load a high-resolution (1:10m) map of country borders
     Borders = cseature.NaturalEarthFeature(
@@ -65,7 +65,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                   lw=0.6, zorder=10)
 
     # Add country borders to the axes
-    ax.add_feature(Borders, edgecolor='gray', facecolor='None',
+    ax.add_feature(Borders, edgecolor=color_shape, facecolor='None',
                    alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
@@ -73,7 +73,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
         path_dep = f'{root}gadm36_COL_1.shp'
         ax.add_geometries(Reader(path_dep).geometries(),
                           ccrs.PlateCarree(),
-                          facecolor='none', edgecolor='gray', lw=0.4)
+                          facecolor='none', edgecolor=color_shape, lw=0.4)
     return ax
 
 
@@ -243,7 +243,7 @@ if __name__ == '__main__':
                        'fontweight': 'semibold', 'color': '#434343'}
 
     # Create a figure with a specified size
-    fig = plt.figure(figsize=(7, 9))
+    fig = plt.figure(figsize=(7, 10))
 
     # Initialize the index for selecting time slices of the temperature data
     idx = 0
