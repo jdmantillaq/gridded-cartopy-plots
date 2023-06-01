@@ -10,7 +10,8 @@ sns.set_context('notebook', font_scale=1.2)
 
 
 def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
-                        departamentos=False, **kwargs):
+                        countries=False, departamentos=False, 
+                        amva=False, **kwargs):
     """
     Add continents, coastlines, gridlines, and tick labels to a Cartopy axes.
 
@@ -36,18 +37,12 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     from cartopy.io.shapereader import Reader
     
     color_shape = kwargs.get('color_shape', 'k')
-    color_country = kwargs.get('color_country', 'k')
-
-    # Load a high-resolution (1:10m) map of country borders
-    Borders = cseature.NaturalEarthFeature(
-        category='cultural',
-        name='admin_0_boundary_lines_land',
-        scale=f'{map_resolution}m',
-        facecolor='none'
-    )
+    color_country = kwargs.get('color_country', 'k')    
+    
+    lon_val = np.arange(0, 360, lon_step)
 
     # Set the tick locations and labels for the axes
-    ax.set_xticks(np.arange(-180, 180, lon_step), crs=ccrs.PlateCarree())
+    ax.set_xticks(lon_val, crs=ccrs.PlateCarree())
     ax.set_yticks(np.arange(-90, 91, lat_step), crs=ccrs.PlateCarree())
     ax.tick_params(axis='both', which='major', labelsize=12, color="#434343")
     lon_formatter = LongitudeFormatter(zero_direction_label=True,
@@ -65,9 +60,18 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     ax.coastlines(resolution=f'{map_resolution}m', color='k', alpha=0.78,
                   lw=0.6, zorder=10)
 
-    # Add country borders to the axes
-    ax.add_feature(Borders, edgecolor=color_country, facecolor='None',
-                   alpha=0.8, lw=0.6, zorder=11)
+    if countries:
+        # Load a high-resolution (1:10m) map of country borders
+        Borders = cseature.NaturalEarthFeature(
+            category='cultural',
+            name='admin_0_boundary_lines_land',
+            scale=f'{map_resolution}m',
+            facecolor='none'
+        )
+            
+        # Add country borders to the axes
+        ax.add_feature(Borders, edgecolor=color_country, facecolor='None',
+                    alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
         root = os.path.join(os.path.dirname(__file__), 'shapes/COL_shp/')
@@ -75,6 +79,15 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
         ax.add_geometries(Reader(path_dep).geometries(),
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor=color_shape, lw=0.4)
+        
+    if amva:
+        root = os.path.join(os.path.dirname(__file__), 'shapes/AMVA/')
+        path_amva = f'{root}AreaMetropolitana.shp'
+        ax.add_geometries(Reader(path_amva).geometries(),
+                          ccrs.PlateCarree(),
+                          facecolor='none', edgecolor=color_shape, lw=0.4)
+        
+        
     return ax
 
 
@@ -212,6 +225,102 @@ def add_colorbar(fig, cs, label, orientation, grid_prop,
             "Invalid orientation. Choose either 'horizontal' or 'vertical'.")
 
 
+
+
+# Open the netCDF dataset
+ds = xr.open_dataset('dummy_data/air.2m.gauss.2022.nc')
+
+# Extract the temperature values (converting from Kelvin to Celsius)
+var_values = ds['air'].values[:, 0, :, :]-273.15
+# Extract the time values and convert to datetime
+time = pd.to_datetime(ds['time'].values)
+# Extract latitude and longitude values
+lat = ds['lat'].values
+lon = ds['lon'].values
+
+# Define the map projection (PlateCarree) and set the image extent
+proj = ccrs.PlateCarree(central_longitude=0)
+img_extent = (-75.75, -75.2, 5.95, 6.55)
+#img_extent = (-80, -66, -5, 13)
+# Define the grid size (number of rows and columns)
+num_rows = 1
+num_columns = 1
+
+# Use the function to calculate properties of the grid
+grid_prop = x_coords, y_coords, x_fig, y_fig = define_grid_fig(
+    num_rows, num_columns)
+
+# Define font properties for axis labels and title
+font_prop = {'fontsize': 12, 'fontweight': 'semibold', 'color': '#434343'}
+font_prop_title = {'fontsize': 14,
+                    'fontweight': 'semibold', 'color': '#434343'}
+
+# Create a figure with a specified size
+fig = plt.figure(figsize=(7, 10))
+
+# Initialize the index for selecting time slices of the temperature data
+idx = 0
+# Define the contour levels for the temperature plot
+levels = np.linspace(6, 32, 18)
+
+# Define the colormap for the plot
+cmap = sns.color_palette("Spectral_r", as_cmap=True)
+
+# Loop through each row and column to create a grid of subplots
+for fi in range(num_rows):
+    for ci in range(num_columns):
+        # Add axes to the figure with the calculated properties
+        ax = fig.add_axes([x_coords[ci], y_coords[fi],
+                            x_fig, y_fig],
+                            projection=proj)
+        # Add geographic features to the plot
+        ax = continentes_lon_lat(ax, amva=True, lon_step=1,
+                                    lat_step=1)
+
+        # Set the image extent and aspect ratio of the plot
+        ax.set_extent(img_extent, proj)
+        ax.set_aspect('auto')
+
+        # Remove y-axis labels for subplots that aren't in the first column
+        if ci > 0:
+            ax.set_yticklabels([])
+
+        # Remove x-axis labels for subplots that are not in the last row
+        if fi < (num_rows - 1):
+            ax.set_xticklabels([])
+
+        # Plot the temperature data for the current time slice
+        cs = ax.contourf(lon, lat, var_values[idx, :, :], levels,
+                            cmap=cmap, extend='both', transform=proj)
+
+        # Add a title to each subplot
+        ax.set_title(f"{time[idx].strftime('%Y-%b-%d')}",
+                        fontdict=font_prop_title)
+
+        # Increment the index to move to the next time slice
+        idx += 1
+
+# Define the orientation and label of the colorbar
+orientation = 'horizontal'
+label = 'Temperature [°C]'
+
+# Add a horizontal colorbar to the figure
+add_colorbar(fig=fig, cs=cs, label=label,
+                orientation=orientation,
+                grid_prop=grid_prop,
+                cbar_factor=0.8,
+                cbar_width=0.025,
+                y_coord_cbar=-0.035)
+
+# Add a vertical colorbar to the figure (optional)
+add_colorbar(fig, cs, label, 'vertical', grid_prop,
+                cbar_factor=0.8, cbar_width=0.025)
+
+# Show the figure with all its subplots and colorbars
+plt.show()
+
+
+#%%
 if __name__ == '__main__':
 
     # Open the netCDF dataset
@@ -262,7 +371,8 @@ if __name__ == '__main__':
                                x_fig, y_fig],
                               projection=proj)
             # Add geographic features to the plot
-            ax = continentes_lon_lat(ax, departamentos=True)
+            ax = continentes_lon_lat(ax, departamentos=True, lon_step=5,
+                                     lat_step=5)
 
             # Set the image extent and aspect ratio of the plot
             ax.set_extent(img_extent, proj)
@@ -297,7 +407,7 @@ if __name__ == '__main__':
                  grid_prop=grid_prop,
                  cbar_factor=0.8,
                  cbar_width=0.025,
-                 y_coord_cbar=-0.02)
+                 y_coord_cbar=-0.035)
 
     # Add a vertical colorbar to the figure (optional)
     add_colorbar(fig, cs, label, 'vertical', grid_prop,
@@ -308,3 +418,50 @@ if __name__ == '__main__':
 
 
 # %%
+import os
+import numpy as np
+import cartopy.crs as ccrs
+from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+import cartopy.feature as cseature
+from cartopy.io.shapereader import Reader
+VA = '/home/jdmantillaq/Documents/gridded-cartopy-plots/shapes/AMVA/AreaMetropolitana.shp'
+# Elegimos el tipo de proyección
+proj = ccrs.PlateCarree(central_longitude=0)
+
+# Creamos la figura
+fig = plt.figure(figsize = (11,9))
+
+
+# Modificamos los parámetro acorde a la escala y tamaño del gráfico
+Escala = 70
+Unidad_Flecha = 5
+Escala_Grilla = 280
+
+# Creamos un axis con la proyección deseada
+ax = plt.axes(projection=proj)
+
+
+
+ax.set_title('Valle de Aburrá', fontsize = 18, loc='center')
+
+# Seleccionamos las etiquetas de los ejes
+ax.set_xticks(np.arange(0, 360, 0.25), crs=ccrs.PlateCarree())
+ax.set_yticks(np.arange(-90, 90, 0.25), crs=ccrs.PlateCarree())
+ax.tick_params(axis='both', which='major', labelsize=10) 
+lon_formatter = LongitudeFormatter(zero_direction_label=True,
+                number_format='.2f')
+lat_formatter = LatitudeFormatter()
+ax.xaxis.set_major_formatter(lon_formatter)
+ax.yaxis.set_major_formatter(lat_formatter)
+ax.set_axisbelow(False)
+
+# Graficamos las grilla
+ax.grid(which='major', linestyle='--', linewidth='0.6', color='gray',
+        alpha =0.8) 
+
+# Agregamos el shape para VA
+ax.add_geometries(Reader(VA).geometries(), ccrs.PlateCarree(), 
+                  facecolor='none', edgecolor='k', lw = 1.3)
+
+# Recortamos el mapa para mostrar a VA solamente
+ax.set_extent([-75.75, -75.2, 5.95, 6.55])
