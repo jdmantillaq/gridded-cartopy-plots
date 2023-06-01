@@ -9,7 +9,8 @@ sns.set(style="whitegrid")
 sns.set_context('notebook', font_scale=1.2)
 
 
-def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50):
+def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
+                        departamentos=False):
     """
     Add continents, coastlines, gridlines, and tick labels to a Cartopy axes.
 
@@ -31,6 +32,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50):
     import cartopy.crs as ccrs
     from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
     import cartopy.feature as cseature
+    from cartopy.io.shapereader import Reader
 
     # Load a high-resolution (1:10m) map of country borders
     Borders = cseature.NaturalEarthFeature(
@@ -39,7 +41,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50):
         scale=f'{map_resolution}m',
         facecolor='none'
     )
-    
+
     # Set the tick locations and labels for the axes
     ax.set_xticks(np.arange(-180, 180, lon_step), crs=ccrs.PlateCarree())
     ax.set_yticks(np.arange(-90, 91, lat_step), crs=ccrs.PlateCarree())
@@ -63,6 +65,11 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50):
     ax.add_feature(Borders, edgecolor='gray', facecolor='None',
                    alpha=0.8, lw=0.6, zorder=11)
 
+    if departamentos:
+        path_dep = 'shapes/COL_shp/gadm36_COL_1.shp'
+        ax.add_geometries(Reader(path_dep).geometries(),
+                          ccrs.PlateCarree(),
+                          facecolor='none', edgecolor='gray', lw=0.4)
     return ax
 
 
@@ -216,6 +223,7 @@ if __name__ == '__main__':
     # Define the map projection (PlateCarree) and set the image extent
     proj = ccrs.PlateCarree(central_longitude=0)
     img_extent = (-115, -30, -10, 30)
+    img_extent = (-80, -66, -5, 13)
 
     # Define the grid size (number of rows and columns)
     num_rows = 3
@@ -231,7 +239,7 @@ if __name__ == '__main__':
                        'fontweight': 'semibold', 'color': '#434343'}
 
     # Create a figure with a specified size
-    fig = plt.figure(figsize=(8, 6))
+    fig = plt.figure(figsize=(7, 9))
 
     # Initialize the index for selecting time slices of the temperature data
     idx = 0
@@ -249,7 +257,7 @@ if __name__ == '__main__':
                                x_fig, y_fig],
                               projection=proj)
             # Add geographic features to the plot
-            ax = continentes_lon_lat(ax)
+            ax = continentes_lon_lat(ax, departamentos=True)
 
             # Set the image extent and aspect ratio of the plot
             ax.set_extent(img_extent, proj)
@@ -283,7 +291,8 @@ if __name__ == '__main__':
                  orientation=orientation,
                  grid_prop=grid_prop,
                  cbar_factor=0.8,
-                 cbar_width=0.025)
+                 cbar_width=0.025,
+                 y_coord_cbar=-0.02)
 
     # Add a vertical colorbar to the figure (optional)
     add_colorbar(fig, cs, label, 'vertical', grid_prop,
