@@ -36,6 +36,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     from cartopy.io.shapereader import Reader
     
     color_shape = kwargs.get('color_shape', 'k')
+    color_country = kwargs.get('color_country', 'k')
 
     # Load a high-resolution (1:10m) map of country borders
     Borders = cseature.NaturalEarthFeature(
@@ -65,7 +66,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                   lw=0.6, zorder=10)
 
     # Add country borders to the axes
-    ax.add_feature(Borders, edgecolor=color_shape, facecolor='None',
+    ax.add_feature(Borders, edgecolor=color_country, facecolor='None',
                    alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
