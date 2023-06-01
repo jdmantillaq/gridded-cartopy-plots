@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import xarray as xr
 import pandas as pd
 import seaborn as sns
-import sys
-sys.path.append('../')
 sns.set(style="whitegrid")
 sns.set_context('notebook', font_scale=1.2)
 
@@ -36,6 +34,8 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
     import cartopy.feature as cseature
     from cartopy.io.shapereader import Reader
+    import sys
+    sys.path.append('../')
 
     # Load a high-resolution (1:10m) map of country borders
     Borders = cseature.NaturalEarthFeature(
