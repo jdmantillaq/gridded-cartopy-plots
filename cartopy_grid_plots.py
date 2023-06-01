@@ -9,7 +9,7 @@ sns.set(style="whitegrid")
 sns.set_context('notebook', font_scale=1.2)
 
 
-def continentes_lon_lat(ax, lon_step=30, lat_step=15):
+def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50):
     """
     Add continents, coastlines, gridlines, and tick labels to a Cartopy axes.
 
@@ -36,10 +36,10 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15):
     Borders = cseature.NaturalEarthFeature(
         category='cultural',
         name='admin_0_boundary_lines_land',
-        scale='110m',
+        scale=f'{map_resolution}m',
         facecolor='none'
     )
-
+    
     # Set the tick locations and labels for the axes
     ax.set_xticks(np.arange(-180, 180, lon_step), crs=ccrs.PlateCarree())
     ax.set_yticks(np.arange(-90, 91, lat_step), crs=ccrs.PlateCarree())
@@ -56,7 +56,8 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15):
             alpha=0.8, zorder=9)
 
     # Add coastlines to the axes
-    ax.coastlines(resolution='110m', color='k', alpha=0.78, lw=0.6, zorder=10)
+    ax.coastlines(resolution=f'{map_resolution}m', color='k', alpha=0.78,
+                  lw=0.6, zorder=10)
 
     # Add country borders to the axes
     ax.add_feature(Borders, edgecolor='gray', facecolor='None',
