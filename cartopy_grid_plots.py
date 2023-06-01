@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import xarray as xr
 import pandas as pd
 import seaborn as sns
+import sys
+sys.path.append('../')
 sns.set(style="whitegrid")
 sns.set_context('notebook', font_scale=1.2)
 
@@ -67,8 +69,8 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                    alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
-        root = os.getcwd()
-        path_dep = f'{root}/shapes/COL_shp/gadm36_COL_1.shp'
+        
+        path_dep = 'shapes/COL_shp/gadm36_COL_1.shp'
         ax.add_geometries(Reader(path_dep).geometries(),
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor='gray', lw=0.4)
