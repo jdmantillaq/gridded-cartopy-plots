@@ -28,6 +28,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     cartopy.mpl.geoaxes.GeoAxesSubplot
         The modified Cartopy axes.
     """
+    import os
     import numpy as np
     import cartopy.crs as ccrs
     from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
@@ -66,7 +67,8 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                    alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
-        path_dep = 'shapes/COL_shp/gadm36_COL_1.shp'
+        root = os.getcwd()
+        path_dep = f'{root}/shapes/COL_shp/gadm36_COL_1.shp'
         ax.add_geometries(Reader(path_dep).geometries(),
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor='gray', lw=0.4)
