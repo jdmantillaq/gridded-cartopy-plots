@@ -11,7 +11,7 @@ sns.set_context('notebook', font_scale=1.2)
 
 def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                         countries=False, departamentos=False,
-                        amva=False, **kwargs):
+                        amva=False, rivers=False, **kwargs):
     """
     Add continents, coastlines, gridlines, and tick labels to a Cartopy axes.
 
@@ -33,12 +33,12 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     import numpy as np
     import cartopy.crs as ccrs
     from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-    import cartopy.feature as cseature
+    import cartopy.feature as cfeature
     from cartopy.io.shapereader import Reader
-    
+
     color_shape = kwargs.get('color_shape', 'k')
-    color_country = kwargs.get('color_country', 'k')    
-    
+    color_country = kwargs.get('color_country', 'k')
+
     lon_val = np.arange(0, 360, lon_step)
 
     # Set the tick locations and labels for the axes
@@ -62,16 +62,16 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
 
     if countries:
         # Load a high-resolution (1:10m) map of country borders
-        Borders = cseature.NaturalEarthFeature(
+        Borders = cfeature.NaturalEarthFeature(
             category='cultural',
             name='admin_0_boundary_lines_land',
             scale=f'{map_resolution}m',
             facecolor='none'
         )
-            
+
         # Add country borders to the axes
         ax.add_feature(Borders, edgecolor=color_country, facecolor='None',
-                    alpha=0.8, lw=0.6, zorder=11)
+                       alpha=0.8, lw=0.6, zorder=11)
 
     if departamentos:
         root = os.path.join(os.path.dirname(__file__), 'shapes/COL_shp/')
@@ -80,7 +80,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor=color_shape, lw=0.4,
                           zorder=12)
-        
+
     if amva:
         root = os.path.join(os.path.dirname(__file__), 'shapes/AMVA/')
         path_amva = f'{root}AreaMetropolitana.shp'
@@ -88,8 +88,10 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor=color_shape, lw=0.4,
                           zorder=13)
-        
-        
+
+    if rivers:
+        ax.add_feature(cfeature.RIVERS, color='gray', lw=0.4, zorder=11)
+
     return ax
 
 
@@ -227,8 +229,6 @@ def add_colorbar(fig, cs, label, orientation, grid_prop,
             "Invalid orientation. Choose either 'horizontal' or 'vertical'.")
 
 
-
-#%%
 if __name__ == '__main__':
 
     # Open the netCDF dataset
@@ -322,18 +322,16 @@ if __name__ == '__main__':
 
     # Show the figure with all its subplots and colorbars
     plt.show()
-    
-    
-    
+
     # Another example
     img_extent = (-78, -73, 5, 9)
     num_rows = 1
     num_columns = 1
-    
+
     # Use the function to calculate properties of the grid
     grid_prop = x_coords, y_coords, x_fig, y_fig = define_grid_fig(
         num_rows, num_columns)
-    
+
     # Create a figure with a specified size
     fig = plt.figure(figsize=(6, 5))
 
@@ -350,12 +348,13 @@ if __name__ == '__main__':
         for ci in range(num_columns):
             # Add axes to the figure with the calculated properties
             ax = fig.add_axes([x_coords[ci], y_coords[fi],
-                                x_fig, y_fig],
-                                projection=proj)
+                               x_fig, y_fig],
+                              projection=proj)
             # Add geographic features to the plot
             ax = continentes_lon_lat(ax, amva=True, departamentos=True,
-                                    lon_step=1, lat_step=1,
-                                    map_resolution=10)
+                                     rivers=True,
+                                     lon_step=1, lat_step=1,
+                                     map_resolution=10)
 
             # Set the image extent and aspect ratio of the plot
             ax.set_extent(img_extent, proj)
@@ -371,11 +370,11 @@ if __name__ == '__main__':
 
             # Plot the temperature data for the current time slice
             cs = ax.contourf(lon, lat, var_values[idx, :, :], levels,
-                                cmap=cmap, extend='both', transform=proj)
+                             cmap=cmap, extend='both', transform=proj)
 
             # Add a title to each subplot
             ax.set_title(f"{time[idx].strftime('%Y-%b-%d')}",
-                            fontdict=font_prop_title)
+                         fontdict=font_prop_title)
 
             # Increment the index to move to the next time slice
             idx += 1
@@ -385,7 +384,7 @@ if __name__ == '__main__':
 
     # Add a vertical colorbar to the figure (optional)
     add_colorbar(fig, cs, label, 'vertical', grid_prop,
-                    cbar_factor=0.8, cbar_width=0.025)
+                 cbar_factor=0.8, cbar_width=0.025)
 
     # Show the figure with all its subplots and colorbars
     plt.show()

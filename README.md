@@ -8,9 +8,9 @@ The `cartopy_grid_plots` module generates highly customizable, grid-based geogra
 
 For step-by-step instructions on how to generate similar plots, please refer to the `tutorial.ipynb` notebook included in this repository.
 
-<img src="figures/departamentos.png" alt="Colombian's departments shape" width="400"/>
-
 <img src="figures/amva.png" alt="Colombian's departments and AVA shape added" width="400"/>
+
+<img src="figures/departamentos.png" alt="Colombian's departments shape" width="400"/>
 
 <img src="figures/example_1.png" alt="Example 1: 3x3 grid, regional temperature, horizontal colorbar" width="400"/>
 
