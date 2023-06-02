@@ -10,10 +10,13 @@ sns.set_context('notebook', font_scale=1.2)
 
 
 def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
-                        countries=False, departamentos=False,
-                        amva=False, rivers=False, **kwargs):
+                        countries=True, departamentos=False,
+                        amva=False, antioquia=False, rivers=False, **kwargs):
     """
     Add continents, coastlines, gridlines, and tick labels to a Cartopy axes.
+    Additionally, it can add features such as countries,
+    Colombian's departments,  Antioquia department, the AMVA area, and rivers.
+    Custom colors can also be set for shapes and countries.
 
     Parameters
     ----------
@@ -23,12 +26,34 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
         The step size for longitude gridlines and tick labels, by default 30.
     lat_step : int, optional
         The step size for latitude gridlines and tick labels, by default 15.
+    map_resolution : str, optional
+        Resolution of the coastlines, by default '50'.
+    countries : bool, optional
+        If True, adds high-resolution country borders to the axes,
+        by default True.
+    departamentos : bool, optional
+        If True, adds department borders of Colombia to the axes,
+        by default False.
+    amva : bool, optional
+        If True, adds the Metropolitan Area of the Aburrá Valley (AMVA) to
+        the axes, by default False.
+    antioquia : bool, optional
+        If True, adds Antioquia's borders to the axes, by default False.
+    rivers : bool, optional
+        If True, adds the representation of rivers to the axes,
+        by default False.
+    **kwargs
+        color_shape: str, optional
+            The color of the shape borders, by default 'k' (black).
+        color_country: str, optional
+            The color of the country borders, by default 'k' (black).
 
     Returns
     -------
     cartopy.mpl.geoaxes.GeoAxesSubplot
-        The modified Cartopy axes.
+        The modified Cartopy axes with the added features and gridlines.
     """
+
     import os
     import numpy as np
     import cartopy.crs as ccrs
@@ -61,7 +86,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
                   lw=0.6, zorder=10)
 
     if countries:
-        # Load a high-resolution (1:10m) map of country borders
+        # Load a high-resolution map of country borders
         Borders = cfeature.NaturalEarthFeature(
             category='cultural',
             name='admin_0_boundary_lines_land',
@@ -75,23 +100,38 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
 
     if departamentos:
         root = os.path.join(os.path.dirname(__file__), 'shapes/COL_shp/')
-        path_dep = f'{root}gadm36_COL_1.shp'
-        ax.add_geometries(Reader(path_dep).geometries(),
+        path_shape = f'{root}gadm36_COL_1.shp'
+        ax.add_geometries(Reader(path_shape).geometries(),
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor=color_shape, lw=0.4,
                           zorder=12)
 
     if amva:
         root = os.path.join(os.path.dirname(__file__), 'shapes/AMVA/')
-        path_amva = f'{root}AreaMetropolitana.shp'
-        ax.add_geometries(Reader(path_amva).geometries(),
+        path_shape = f'{root}AreaMetropolitana.shp'
+        ax.add_geometries(Reader(path_shape).geometries(),
                           ccrs.PlateCarree(),
                           facecolor='none', edgecolor=color_shape, lw=0.4,
                           zorder=13)
-
+    if antioquia:
+        root = os.path.join(os.path.dirname(__file__), 'shapes/Antioquia/')
+        path_shape = f'{root}Antioquia.shp'
+        ax.add_geometries(Reader(path_shape).geometries(),
+                          ccrs.PlateCarree(),
+                          facecolor='none', edgecolor=color_shape, lw=0.4,
+                          zorder=12)
+        
     if rivers:
-        ax.add_feature(cfeature.RIVERS, color='gray', lw=0.4, zorder=11)
+        # Load a high-resolution map of river centerlines
+        Rivers = cfeature.NaturalEarthFeature(
+            category='physical',
+            name='rivers_lake_centerlines',
+            scale=f'{map_resolution}m',
+            facecolor='none')
 
+        # Add rivers to the axes
+        ax.add_feature(Rivers, edgecolor='gray', facecolor='None',
+                    alpha=0.8, lw=0.6, zorder=11)
     return ax
 
 
@@ -324,7 +364,7 @@ if __name__ == '__main__':
     plt.show()
 
     # Another example
-    img_extent = (-78, -73, 5, 9)
+    img_extent = (-78, -73.5, 5, 9)
     num_rows = 1
     num_columns = 1
 
@@ -351,7 +391,7 @@ if __name__ == '__main__':
                                x_fig, y_fig],
                               projection=proj)
             # Add geographic features to the plot
-            ax = continentes_lon_lat(ax, amva=True, departamentos=True,
+            ax = continentes_lon_lat(ax, amva=True, antioquia=True,
                                      rivers=True,
                                      lon_step=1, lat_step=1,
                                      map_resolution=10)
