@@ -330,6 +330,10 @@ if __name__ == '__main__':
     num_rows = 1
     num_columns = 1
     
+    # Use the function to calculate properties of the grid
+    grid_prop = x_coords, y_coords, x_fig, y_fig = define_grid_fig(
+        num_rows, num_columns)
+    
     # Create a figure with a specified size
     fig = plt.figure(figsize=(6, 5))
 
