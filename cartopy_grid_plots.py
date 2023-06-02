@@ -64,7 +64,7 @@ def continentes_lon_lat(ax, lon_step=30, lat_step=15, map_resolution=50,
     color_shape = kwargs.get('color_shape', 'k')
     color_country = kwargs.get('color_country', 'k')
 
-    lon_val = np.arange(0, 360, lon_step)
+    lon_val = np.arange(-180, 180, lon_step)
 
     # Set the tick locations and labels for the axes
     ax.set_xticks(lon_val, crs=ccrs.PlateCarree())
